@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#10131a">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="拾机">
+<link rel="manifest" href="./manifest.webmanifest">
+<link rel="apple-touch-icon" href="./icons/icon-192.png">
+<title>拾机 · 私人手机模拟器</title>
+<style>
+:root{--bg:#10131a;--panel:#191e29;--panel2:#222938;--line:#30394a;--text:#f4f6fb;--muted:#a5afc0;--accent:#8ee0b5;--accent2:#c5f3d9;--bubble:#28394a;--mine:#b8edcf;--mineText:#183426;--danger:#ff8f91}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top,#273143 0,#10131a 55%);color:var(--text);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","PingFang SC",sans-serif;min-height:100vh}
+button,input,textarea,select{font:inherit}button{cursor:pointer;border:0}
+.app{max-width:520px;min-height:100dvh;margin:auto;background:#111722;position:relative;overflow:hidden;padding-bottom:env(safe-area-inset-bottom)}
+.status{height:48px;padding:14px 22px 4px;display:flex;justify-content:space-between;font-size:13px;color:#e9eef7}
+.topbar{height:54px;padding:0 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #283143;background:#151c28}
+.brand{font-weight:750;letter-spacing:1px}.brand small{display:block;color:var(--muted);font-size:10px;font-weight:400;letter-spacing:2px;margin-top:2px}
+.iconbtn,.ghost{background:var(--panel2);color:var(--text);border:1px solid var(--line);border-radius:12px;padding:9px 12px}
+.screen{display:none;min-height:calc(100dvh - 102px);padding:16px}.screen.active{display:block}
+.homewall{background:linear-gradient(160deg,#24334a,#1a2537 55%,#243b3b);border-radius:24px;padding:20px 16px;min-height:calc(100dvh - 130px);position:relative;overflow:hidden}
+.date{font-size:13px;color:#c7d4e5}.clock{font-size:56px;font-weight:250;letter-spacing:-2px;margin:3px 0 22px}
+.widgets{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:26px}.widget{background:#ffffff19;border:1px solid #ffffff20;border-radius:18px;padding:13px;backdrop-filter:blur(12px);min-height:82px}.widget b{font-size:13px}.widget p{font-size:11px;color:#d5e0ed;margin:7px 0 0;line-height:1.5}
+.apps{display:grid;grid-template-columns:repeat(4,1fr);gap:20px 8px}.appicon{display:flex;flex-direction:column;align-items:center;gap:7px;background:none;color:white;font-size:11px}.appicon span:first-child{width:54px;height:54px;border-radius:16px;display:grid;place-items:center;font-size:25px;box-shadow:0 6px 18px #0004}.dock{position:absolute;bottom:18px;left:14px;right:14px;background:#ffffff20;border:1px solid #ffffff22;border-radius:24px;padding:12px;display:flex;justify-content:space-around;backdrop-filter:blur(16px)}
+.sectionhead{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}.sectionhead h2{font-size:19px;margin:0}.muted{color:var(--muted);font-size:12px}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:18px;padding:14px;margin-bottom:12px}
+.contact{display:flex;align-items:center;gap:12px;padding:12px 2px;border-bottom:1px solid #293244}.contact:last-child{border:0}.avatar{width:46px;height:46px;border-radius:15px;display:grid;place-items:center;background:linear-gradient(135deg,#527b76,#34445e);font-size:22px;flex:none;overflow:hidden}.avatar img{width:100%;height:100%;object-fit:cover}.contactmain{flex:1;min-width:0}.contactmain b{font-size:14px}.contactmain p{margin:5px 0 0;color:var(--muted);font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.chatwrap{display:flex;flex-direction:column;height:calc(100dvh - 120px);margin:-16px}.chathead{height:58px;display:flex;align-items:center;gap:10px;padding:0 14px;border-bottom:1px solid var(--line);background:#171e2a}.chathead .avatar{width:36px;height:36px;border-radius:12px}.chatmessages{flex:1;overflow:auto;padding:16px 12px;background:linear-gradient(#121a26,#101722)}.msgrow{display:flex;margin:11px 0;gap:8px;align-items:flex-end}.msgrow.mine{justify-content:flex-end}.msg{max-width:78%;padding:10px 12px;border-radius:15px;background:var(--bubble);font-size:14px;line-height:1.55;white-space:pre-wrap;overflow-wrap:anywhere}.mine .msg{background:var(--mine);color:var(--mineText);border-bottom-right-radius:5px}.msgrow:not(.mine) .msg{border-bottom-left-radius:5px}.time{font-size:9px;color:#8190a5;align-self:center}.composer{display:flex;gap:8px;padding:10px;background:#171e2a;border-top:1px solid var(--line);align-items:flex-end}.composer textarea{flex:1;resize:none;min-height:40px;max-height:110px;border:1px solid var(--line);background:#222b3a;color:white;border-radius:14px;padding:10px;outline:none}.send{background:var(--accent);color:#163526;font-weight:700;border-radius:13px;padding:11px 15px}.pill{background:#263244;color:#dce5f1;border:1px solid var(--line);border-radius:999px;padding:7px 10px;font-size:11px}
+.field{width:100%;background:#111925;color:white;border:1px solid var(--line);border-radius:12px;padding:11px;margin:6px 0 12px;outline:none}.field:focus{border-color:var(--accent)}label{font-size:12px;color:#c5cedc}.primary{background:var(--accent);color:#183426;border-radius:12px;padding:11px 14px;font-weight:700}.danger{background:#47282d;color:#ffb9bb;border:1px solid #78434a;border-radius:12px;padding:10px 12px}.grid2{display:grid;grid-template-columns:1fr 1fr;gap:9px}.photoGrid{display:grid;grid-template-columns:repeat(3,1fr);gap:7px}.photoGrid img{width:100%;aspect-ratio:1;object-fit:cover;border-radius:12px;background:#293244}.moment{padding:13px 0;border-bottom:1px solid var(--line)}.moment:last-child{border:0}.moment b{font-size:13px}.moment p{font-size:13px;line-height:1.6;color:#e1e7f0}.navback{color:var(--accent);background:none;padding:7px 0}.small{font-size:11px;color:var(--muted);line-height:1.6}.hidden{display:none!important}.toast{position:fixed;bottom:28px;left:50%;transform:translateX(-50%);background:#e5f5ec;color:#183426;padding:10px 15px;border-radius:20px;font-size:12px;z-index:30;box-shadow:0 8px 24px #0005}
+.lock{position:fixed;inset:0;background:linear-gradient(160deg,#24334a,#101722);z-index:50;display:none;align-items:center;justify-content:center;padding:25px;text-align:center}.lock.show{display:flex}.lock h1{font-size:68px;font-weight:200;margin:0}.lock .field{max-width:230px;text-align:center;letter-spacing:8px;font-size:20px}.modal{position:fixed;inset:0;background:#0009;z-index:40;display:none;align-items:flex-end;justify-content:center}.modal.show{display:flex}.sheet{width:min(520px,100%);max-height:88dvh;overflow:auto;background:#1a2230;border-radius:24px 24px 0 0;padding:20px 18px calc(24px + env(safe-area-inset-bottom));border:1px solid var(--line)}
+@media(min-width:600px){body{padding:20px}.app{border:1px solid #344052;border-radius:30px;min-height:850px}.screen{min-height:748px}.chatwrap{height:748px}.homewall{min-height:720px}}
+</style>
+</head>
+<body>
+<div class="app">
+ <div class="status"><span id="statusTime">9:41</span><span>●●●　Wi-Fi　▰</span></div>
+ <header class="topbar"><div class="brand">拾机 <small>PRIVATE PHONE SIMULATOR</small></div><div><button class="iconbtn" id="lockBtn" title="锁屏">⌑</button> <button class="iconbtn" id="settingsBtn">⚙</button></div></header>
+ <main>
+  <section class="screen active" id="home">
+   <div class="homewall">
+    <div class="date" id="homeDate">星期一 · 11月3日</div><div class="clock" id="homeClock">09:41</div>
+    <div class="widgets"><div class="widget"><b>☁ 今日</b><p>一些故事，正在等待被发现。</p></div><div class="widget"><b>✉ 未读消息</b><p id="unreadWidget">你有新的故事线索。</p><button class="pill" id="randomBtn" style="margin-top:8px">随机生成聊天</button></div></div>
+    <div class="apps">
+     <button class="appicon" data-go="chats"><span style="background:linear-gradient(135deg,#80d6a6,#318b69)">💬</span>微信</button>
+     <button class="appicon" data-go="moments"><span style="background:linear-gradient(135deg,#e7a96a,#b85b45)">◉</span>朋友圈</button>
+     <button class="appicon" data-go="photos"><span style="background:linear-gradient(135deg,#e9b7b2,#8278c8)">🌄</span>相册</button>
+     <button class="appicon" data-go="contacts"><span style="background:linear-gradient(135deg,#8ba9db,#526aa0)">👥</span>联系人</button>
+     <button class="appicon" data-go="settings"><span style="background:linear-gradient(135deg,#9da9b7,#566272)">⚙️</span>设置</button>
+     <button class="appicon" data-go="story"><span style="background:linear-gradient(135deg,#c6b4e9,#7862a5)">📓</span>手机备忘</button>
+     <button class="appicon" data-go="chats"><span style="background:linear-gradient(135deg,#9ad7dc,#528b9c)">📨</span>短信</button>
+     <button class="appicon" data-go="chats"><span style="background:linear-gradient(135deg,#e5d48a,#9a874a)">☎️</span>通话</button>
+    </div>
+    <div class="dock"><button class="appicon" data-go="chats"><span style="background:#6bc48e">💬</span></button><button class="appicon" data-go="contacts"><span style="background:#7999d1">👤</span></button><button class="appicon" data-go="photos"><span style="background:#c18acb">🌸</span></button><button class="appicon" data-go="settings"><span style="background:#8793a5">⚙</span></button></div>
+   </div>
+  </section>
+  <section class="screen" id="chats"><div class="sectionhead"><h2>微信</h2><button class="primary" id="newCharacter">＋ 新建角色</button></div><div class="muted" style="margin-bottom:10px">最近聊天 · 点击联系人进入对话</div><div class="card" id="chatList"></div></section>
+  <section class="screen" id="contacts"><div class="sectionhead"><h2>通讯录</h2><button class="primary" id="addContact">＋ 添加</button></div><div class="card" id="contactList"></div></section>
+  <section class="screen" id="chat"><div class="chatwrap"><div class="chathead"><button class="navback" id="chatBack">‹</button><div class="avatar" id="chatAvatar">🌙</div><div style="flex:1"><b id="chatName">联系人</b><div class="muted" id="chatSub">在线</div></div><button class="iconbtn" id="editCurrent">⋯</button></div><div class="chatmessages" id="messages"></div><div class="composer"><button class="iconbtn" id="voiceBtn" title="语音消息">🎙</button><button class="iconbtn" id="imageBtn" title="发送图片">＋</button><textarea id="messageInput" rows="1" placeholder="发送消息…"></textarea><button class="send" id="sendBtn">发送</button></div></div></section>
+  <section class="screen" id="moments"><div class="sectionhead"><h2>朋友圈</h2><button class="primary" id="newMoment">＋ 发布</button></div><div class="card" id="momentList"></div></section>
+  <section class="screen" id="photos"><div class="sectionhead"><h2>相册</h2><button class="primary" id="uploadPhotos">＋ 导入照片</button></div><p class="small">照片只保存在当前浏览器本机，不会自动上传到 AI 平台。</p><div class="card"><div class="photoGrid" id="photoGrid"></div></div></section>
+  <section class="screen" id="story"><div class="sectionhead"><h2>手机备忘</h2><span class="pill">本机记录</span></div><div class="card"><p>这里可以放置手机主人留下的备忘、线索和故事背景。</p><textarea class="field" id="memo" rows="9" placeholder="写下你发现的线索……"></textarea><button class="primary" id="saveMemo">保存备忘</button></div></section>
+  <section class="screen" id="settings"><div class="sectionhead"><h2>设置</h2></div>
+   <div class="card"><b>云端 AI 接口</b><p class="small">填写兼容 OpenAI Chat Completions 格式的服务商信息。请求会从你的浏览器直接发送到服务商。</p>
+    <label>API Base URL（例如 https://api.example.com/v1）</label><input class="field" id="apiBase" placeholder="https://你的服务商域名/v1">
+    <label>API Key</label><input class="field" id="apiKey" type="password" placeholder="sk-…">
+    <label>模型名称</label><input class="field" id="apiModel" placeholder="例如 deepseek-chat / gpt-4o-mini">
+    <button class="primary" id="saveApi">保存接口设置</button> <button class="ghost" id="testApi">测试连接</button>
+    <p class="small">安全提示：本项目没有后端。API Key 仅保存在本机浏览器 localStorage，但网页脚本可读取它；不要在公共设备使用，不要把含密钥的代码或备份上传公开仓库。部分服务商会因 CORS 限制而无法从浏览器直连。</p>
+   </div>
+   <div class="card"><b>锁屏密码</b><p class="small">设置 4–8 位数字 PIN。忘记密码可清除本机网页数据恢复（聊天记录也会一起清除）。</p><input class="field" id="pinInput" type="password" inputmode="numeric" maxlength="8" placeholder="设置新 PIN"><button class="primary" id="savePin">设置 / 修改 PIN</button> <button class="ghost" id="removePin">关闭锁屏密码</button></div>
+   <div class="card"><b>数据与备份</b><div class="grid2"><button class="ghost" id="exportData">导出备份</button><button class="ghost" id="importData">导入备份</button></div><p class="small">聊天、角色、朋友圈和备忘保存在当前浏览器。建议定期导出备份。</p><button class="danger" id="resetData">清空全部本机数据</button></div>
+   <div class="card"><b>安装到桌面</b><p class="small">部署到 HTTPS 网址后，用 iPhone Safari 打开，点分享 → 添加到主屏幕。</p></div>
+  </section>
+ </main>
+ <input type="file" id="photoFiles" accept="image/*" multiple hidden>
+ <input type="file" id="importFile" accept="application/json" hidden>
+</div>
+<div class="lock" id="lockScreen"><div><div style="font-size:45px;margin-bottom:15px">🔒</div><div class="date" id="lockDate">星期一 · 11月3日</div><h1 id="lockClock">09:41</h1><p>拾机 · 此手机已锁定</p><input class="field" id="unlockPin" type="password" inputmode="numeric" maxlength="8" placeholder="输入密码"><br><button class="primary" id="unlockBtn">解锁</button><p class="small" id="unlockError"></p></div></div>
+<div class="modal" id="modal"><div class="sheet"><div class="sectionhead"><h2 id="modalTitle">新建角色</h2><button class="iconbtn" id="closeModal">✕</button></div><div id="modalBody"></div></div></div>
+<div id="toast" class="toast hidden"></div>
+<script>
+const $=id=>document.getElementById(id);
+const KEY='shiji_phone_v1';
+const defaultData={
+ api:{base:'',key:'',model:''},pin:'',
+ characters:[
+  {id:'c1',name:'林知夏',emoji:'🌙',bio:'你的旧友，表面随性，心思细腻。',prompt:'你叫林知夏，是手机主人的旧友。你说话自然、有生活感，不要像客服。你知道你们之间有共同的过去，但不要一次性说完。'},
+  {id:'c2',name:'周屿',emoji:'🪐',bio:'话不多，似乎藏着秘密。',prompt:'你叫周屿，沉稳寡言，观察力强。你和手机主人之间有一段未说清的往事。回复简短但有细节。'},
+  {id:'c3',name:'妈妈',emoji:'🌷',bio:'家人，关心你的日常。',prompt:'你是手机主人的妈妈，关心但不事事追问，说话自然亲切。'}
+ ],
+ chats:{},moments:[
+  {id:'m1',name:'林知夏',emoji:'🌙',time:'昨天 21:18',text:'有时候觉得，熟悉的地方也会突然变得陌生。'},
+  {id:'m2',name:'周屿',emoji:'🪐',time:'昨天 18:42',text:'那件事先别告诉别人。等我确认以后再说。'}
+ ],photos:[],memo:''
+};
+let data=load(),current=null,recorder=null,recordChunks=[];
+function load(){try{return {...structuredClone(defaultData),...JSON.parse(localStorage.getItem(KEY)||'{}')}}catch(e){return structuredClone(defaultData)}}
+function save(){localStorage.setItem(KEY,JSON.stringify(data))}
+function id(){return Math.random().toString(36).slice(2,10)}
+function toast(t){$('toast').textContent=t;$('toast').classList.remove('hidden');setTimeout(()=>$('toast').classList.add('hidden'),2300)}
+function go(name){document.querySelectorAll('.screen').forEach(x=>x.classList.remove('active'));$(name).classList.add('active');if(name==='chats')renderChats();if(name==='contacts')renderContacts();if(name==='moments')renderMoments();if(name==='photos')renderPhotos();if(name==='settings')fillSettings()}
+document.querySelectorAll('[data-go]').forEach(b=>b.onclick=()=>go(b.dataset.go));
+function timeNow(){return new Date().toLocaleTimeString('zh-CN',{hour:'2-digit',minute:'2-digit',hour12:false})}
+function updateClock(){let d=new Date();$('statusTime').textContent=timeNow();$('homeClock').textContent=timeNow();$('lockClock').textContent=timeNow();$('homeDate').textContent=d.toLocaleDateString('zh-CN',{weekday:'long',month:'long',day:'numeric'});$('lockDate').textContent=$('homeDate').textContent}
+setInterval(updateClock,15000);updateClock();
+function ensureChat(cid){if(!data.chats[cid])data.chats[cid]=[];return data.chats[cid]}
+function lastText(cid){let a=ensureChat(cid);return a.length?a[a.length-1].text||'[图片/语音]':'还没有聊天记录'}
+function renderChats(){$('chatList').innerHTML=data.characters.map(c=>`<div class="contact" data-id="${c.id}"><div class="avatar">${esc(c.emoji)}</div><div class="contactmain"><b>${esc(c.name)}</b><p>${esc(lastText(c.id))}</p></div><span class="muted">${ensureChat(c.id).length?ensureChat(c.id).slice(-1)[0].time:''}</span></div>`).join('')||'<p class="muted">还没有联系人，点击右上角新建角色。</p>';document.querySelectorAll('#chatList [data-id]').forEach(x=>x.onclick=()=>openChat(x.dataset.id))}
+function renderContacts(){$('contactList').innerHTML=data.characters.map(c=>`<div class="contact" data-id="${c.id}"><div class="avatar">${esc(c.emoji)}</div><div class="contactmain"><b>${esc(c.name)}</b><p>${esc(c.bio||'')}</p></div><button class="pill editChar" data-id="${c.id}">编辑</button></div>`).join('')||'<p class="muted">暂无联系人</p>';document.querySelectorAll('.editChar').forEach(b=>b.onclick=()=>characterModal(b.dataset.id))}
+function openChat(cid){current=cid;let c=data.characters.find(x=>x.id===cid);if(!c)return;$('chatName').textContent=c.name;$('chatAvatar').textContent=c.emoji;$('chatSub').textContent=c.bio||'在线';renderMessages();go('chat')}
+function renderMessages(){let a=ensureChat(current);$('messages').innerHTML=a.map(m=>`<div class="msgrow ${m.role==='user'?'mine':''}">${m.role!=='user'?'<span class="time">'+esc(m.time)+'</span>':''}<div class="msg">${m.image?`<img src="${m.image}" style="max-width:190px;border-radius:10px;display:block">`:''}${m.audio?`<audio controls src="${m.audio}" style="max-width:190px"></audio>`:''}${m.text?esc(m.text):''}</div>${m.role==='user'?'<span class="time">'+esc(m.time)+'</span>':''}</div>`).join('');$('messages').scrollTop=$('messages').scrollHeight}
+function addMessage(role,text,extra={}){let m={role,text,time:timeNow(),...extra};ensureChat(current).push(m);save();renderMessages();renderChats()}
+function esc(s=''){return String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+$('chatBack').onclick=()=>go('chats');
+async function send(){let text=$('messageInput').value.trim();if(!text)return;$('messageInput').value='';addMessage('user',text);let c=data.characters.find(x=>x.id===current);let cfg=data.api;if(!cfg.base||!cfg.key||!cfg.model){toast('请先在设置中填写云端 API');return}
+let history=ensureChat(current).slice(-24).map(m=>({role:m.role==='user'?'user':'assistant',content:m.text||'[用户发送了附件]'}));
+let payload={model:cfg.model,messages:[{role:'system',content:c.prompt+'\n角色补充资料：'+(c.bio||'')+'\n请保持沉浸式聊天，不要提及自己是AI，不要替用户决定行动。'},...history]};
+try{$('sendBtn').disabled=true;$('sendBtn').textContent='…';let base=cfg.base.replace(/\/+$/,'');let res=await fetch(base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+cfg.key},body:JSON.stringify(payload)});let j=await res.json();if(!res.ok)throw Error(j.error?.message||j.message||'HTTP '+res.status);let answer=j.choices?.[0]?.message?.content;if(Array.isArray(answer))answer=answer.map(x=>x.text||'').join('');if(!answer)throw Error('接口没有返回文本');addMessage('assistant',answer)}catch(e){addMessage('assistant','（连接失败）'+e.message+'\n请检查 API 地址、模型名称、密钥和服务商是否允许浏览器跨域请求。')}finally{$('sendBtn').disabled=false;$('sendBtn').textContent='发送'}}
+$('sendBtn').onclick=send;$('messageInput').addEventListener('keydown',e=>{if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();send()}});
+function showModal(title,html){$('modalTitle').textContent=title;$('modalBody').innerHTML=html;$('modal').classList.add('show')}
+function closeModal(){$('modal').classList.remove('show')}
+$('closeModal').onclick=closeModal;$('modal').onclick=e=>{if(e.target===$('modal'))closeModal()}
+function characterModal(cid=null){let c=cid?data.characters.find(x=>x.id===cid):{name:'',emoji:'🙂',bio:'',prompt:''};showModal(cid?'编辑角色':'新建角色',`
+<label>昵称</label><input class="field" id="fName" value="${esc(c.name)}" placeholder="例如：顾言">
+<label>头像 Emoji（也可填一个符号）</label><input class="field" id="fEmoji" value="${esc(c.emoji)}">
+<label>个性签名 / 简介</label><input class="field" id="fBio" value="${esc(c.bio)}">
+<label>角色人设 Prompt（越具体越稳定）</label><textarea class="field" id="fPrompt" rows="6" placeholder="身份、性格、与你的关系、说话习惯、知道的秘密……">${esc(c.prompt)}</textarea>
+<div class="grid2"><button class="primary" id="saveChar">保存角色</button><button class="danger" id="deleteChar">删除角色</button></div>`);
+$('deleteChar').onclick=()=>{if(!cid)return closeModal();if(confirm('删除角色及其聊天记录？')){data.characters=data.characters.filter(x=>x.id!==cid);delete data.chats[cid];save();closeModal();renderContacts();renderChats();go('contacts')}};
+$('saveChar').onclick=()=>{let v={id:cid||id(),name:$('fName').value.trim(),emoji:$('fEmoji').value.trim()||'🙂',bio:$('fBio').value.trim(),prompt:$('fPrompt').value.trim()};if(!v.name||!v.prompt){toast('请至少填写昵称和人设 Prompt');return}if(cid)Object.assign(c,v);else data.characters.push(v);save();closeModal();renderContacts();renderChats();toast('角色已保存')}}
+$('newCharacter').onclick=()=>characterModal();$('addContact').onclick=()=>characterModal();$('editCurrent').onclick=()=>characterModal(current);
+function fillSettings(){$('apiBase').value=data.api.base;$('apiKey').value=data.api.key;$('apiModel').value=data.api.model;$('pinInput').value='';}
+$('settingsBtn').onclick=()=>go('settings');
+$('saveApi').onclick=()=>{data.api={base:$('apiBase').value.trim().replace(/\/+$/,''),key:$('apiKey').value.trim(),model:$('apiModel').value.trim()};save();toast('API 设置已保存在本机')};
+$('testApi').onclick=async()=>{data.api={base:$('apiBase').value.trim().replace(/\/+$/,''),key:$('apiKey').value.trim(),model:$('apiModel').value.trim()};save();if(!data.api.base||!data.api.key||!data.api.model)return toast('请先填写完整');toast('正在测试…');try{let r=await fetch(data.api.base+'/chat/completions',{method:'POST',headers:{'Content-Type':'application/json','Authorization':'Bearer '+data.api.key},body:JSON.stringify({model:data.api.model,messages:[{role:'user',content:'只回复：连接成功'}],max_tokens:12})});let j=await r.json();if(!r.ok)throw Error(j.error?.message||'HTTP '+r.status);toast('连接成功：'+(j.choices?.[0]?.message?.content||'已收到响应'))}catch(e){toast('测试失败：'+e.message)}};
+$('savePin').onclick=()=>{let p=$('pinInput').value;if(!/^\d{4,8}$/.test(p))return toast('请输入 4–8 位数字');data.pin=p;save();toast('锁屏密码已设置')};
+$('removePin').onclick=()=>{data.pin='';save();toast('已关闭锁屏密码')};
+$('lockBtn').onclick=()=>{if(!data.pin)return toast('请先在设置中设置 PIN');$('lockScreen').classList.add('show');$('unlockPin').value='';$('unlockError').textContent=''};
+$('unlockBtn').onclick=()=>{if($('unlockPin').value===data.pin){$('lockScreen').classList.remove('show')}else $('unlockError').textContent='密码不正确，请重试'};
+function renderMoments(){$('momentList').innerHTML=data.moments.slice().reverse().map(m=>`<div class="moment"><div style="display:flex;gap:10px;align-items:center"><div class="avatar">${esc(m.emoji||'🙂')}</div><div><b>${esc(m.name)}</b><div class="muted">${esc(m.time)}</div></div></div><p>${esc(m.text)}</p></div>`).join('')}
+$('newMoment').onclick=()=>{showModal('发布朋友圈',`<label>发布者</label><select class="field" id="momentWho">${data.characters.map(c=>`<option value="${c.id}">${esc(c.name)}</option>`).join('')}</select><label>内容</label><textarea class="field" id="momentText" rows="5" placeholder="分享此刻……"></textarea><button class="primary" id="postMoment">发布</button>`);$('postMoment').onclick=()=>{let c=data.characters.find(x=>x.id===$('momentWho').value);let t=$('momentText').value.trim();if(!t)return toast('内容不能为空');data.moments.push({id:id(),name:c?.name||'我',emoji:c?.emoji||'🙂',time:timeNow(),text:t});save();closeModal();renderMoments()}}
+function renderPhotos(){$('photoGrid').innerHTML=data.photos.map((p,i)=>`<img src="${p}" data-index="${i}" alt="相册照片">`).join('')||'<p class="muted" style="grid-column:1/-1">相册还是空的，点击导入照片。</p>'}
+$('uploadPhotos').onclick=()=>$('photoFiles').click();$('imageBtn').onclick=()=>$('photoFiles').click();
+$('photoFiles').onchange=async e=>{for(let f of e.target.files){if(!f.type.startsWith('image/'))continue;let url=await new Promise((resolve,reject)=>{let r=new FileReader();r.onload=()=>resolve(r.result);r.onerror=reject;r.readAsDataURL(f)});data.photos.push(url);if(current)addMessage('user','',{image:url})}save();renderPhotos();e.target.value=''};
+$('voiceBtn').onclick=async()=>{if(!navigator.mediaDevices?.getUserMedia||!window.MediaRecorder){let text=prompt('当前浏览器不支持录音。可输入一条语音消息的文字模拟内容：');if(text)addMessage('user','🎙 语音消息：'+text);return}if(recorder?.state==='recording'){recorder.stop();$('voiceBtn').textContent='🎙';return}try{let stream=await navigator.mediaDevices.getUserMedia({audio:true});recorder=new MediaRecorder(stream);recordChunks=[];recorder.ondataavailable=e=>recordChunks.push(e.data);recorder.onstop=()=>{let blob=new Blob(recordChunks,{type:recorder.mimeType||'audio/webm'});let reader=new FileReader();reader.onload=()=>{addMessage('user','',{audio:reader.result});stream.getTracks().forEach(t=>t.stop())};reader.readAsDataURL(blob)};recorder.start();$('voiceBtn').textContent='⏹';toast('正在录音，再点一次结束')}catch(e){toast('无法录音：请检查麦克风权限')}}
+$('saveMemo').onclick=()=>{data.memo=$('memo').value;save();toast('备忘已保存')};
+$('exportData').onclick=()=>{let blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});let a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='拾机备份.json';a.click();URL.revokeObjectURL(a.href)};
+$('importData').onclick=()=>$('importFile').click();$('importFile').onchange=async e=>{let f=e.target.files[0];if(!f)return;try{let d=JSON.parse(await f.text());if(!d.characters||!d.chats)throw Error('格式不正确');data=d;save();toast('备份导入成功');go('chats')}catch(err){toast('导入失败：'+err.message)}e.target.value=''};
+$('resetData').onclick=()=>{if(confirm('确定清空所有角色、聊天、照片和设置？此操作不可撤销。')){localStorage.removeItem(KEY);data=structuredClone(defaultData);save();go('home');toast('已清空')}}
+$('memo').value=data.memo||'';
+function randomize(){let samples=['你到家了吗？刚刚好像在楼下看到你。','那张照片你还留着吗？我想再确认一下。','别急着回复，等你方便的时候再说。','这件事我暂时不想让其他人知道。','上次说的地方，我明天下午会过去。'];let c=data.characters[Math.floor(Math.random()*data.characters.length)];if(!c)return toast('先创建一个角色');current=c.id;let n=1+Math.floor(Math.random()*3);for(let i=0;i<n;i++)addMessage(i%2?'user':'assistant',samples[Math.floor(Math.random()*samples.length)]);toast('已生成几条随机聊天记录')}
+$('randomBtn').onclick=randomize;
+if('serviceWorker' in navigator && location.protocol.startsWith('http'))navigator.serviceWorker.register('./sw.js').catch(()=>{});
+if(!localStorage.getItem(KEY))save();
+renderChats();renderContacts();renderMoments();renderPhotos();
+</script>
+</body></html>
